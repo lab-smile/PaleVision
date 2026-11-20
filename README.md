@@ -11,8 +11,9 @@ PaleVision models opsin spectral responses with learnable evolutionary visual pe
 ```
 configs/       experiment configs
 dataloader/    dataset loaders
-models/        EVPL, MiT backbone, SegFormer head
+models/        EVPL, encoders, SegFormer head
 util/          training helpers
+weights/       SOTA weights (download; not stored in git)
 datasets/      put datasets here (not shipped)
 work_dir/      logs and checkpoints (not shipped)
 ```
@@ -72,12 +73,48 @@ torchrun --nproc_per_node=1 mars_exp.py \
   --num_workers 2
 ```
 
-Other entry points: `modid_exp.py`, `mhsi_exp.py`, `lib_hsi_exp_v2.py`, `minneapple_exp.py`.
+Other entry points: `modid_exp.py`, `mhsi_exp.py`, `lib_hsi_exp_v2.py`, `minneapple_exp.py`, `encoder_swap_exp.py`, `minneapple_det_count_exp.py`.
+
+Encoder swap on MODID or MHSI:
+
+```bash
+torchrun --nproc_per_node=1 encoder_swap_exp.py \
+  --dataset modid \
+  --encoder twins_svt_small \
+  --opsin_mode free \
+  --config configs/modid.yaml \
+  --workdir work_dir/modid_twins_free
+```
+
+## SOTA weights
+
+Released weights keep only module parameters. Optimizer state, epoch counters, and training hyperparameters are not included.
+
+| File | Setting | Reported score |
+| --- | --- | --- |
+| `weights/modid_twins_svt_small_free.pth` | MODID, Twins-SVT-Small, FreeConv | mIoU 0.6006 |
+| `weights/mhsi_pvt_v2_b2_free.pth` | MHSI, PVT-v2-B2, FreeConv | mIoU 0.5727 |
+| `weights/lib_hsi.pth` | LIB-HSI, MiT-B3, 3-opsin EVPL with a 2-to-3 projection | mIoU 0.3407 |
+| `weights/minneapple.pth` | MinnApple segmentation, opsin evolve | mIoU 0.4845 |
+| `weights/minneapple_detection.pth` | MinnApple detection, fixed opsin | AP@50 0.3105 |
+| `weights/minneapple_counting.pth` | MinnApple counting, trainable opsin | MAE 2.446 |
+| `weights/mars_spectral.pth` | Mars spectral EVPL, epoch 1000 | spectral model |
+
+Segmentation checkpoints are dictionaries with `backbone`, `head`, and `evpl`. Detection and counting checkpoints are a single `state_dict`. `mars_spectral.pth` is the Mars `EVPL` `state_dict`.
+
+```python
+import torch
+ckpt = torch.load("weights/modid_twins_svt_small_free.pth", map_location="cpu")
+backbone.load_state_dict(ckpt["backbone"])
+head.load_state_dict(ckpt["head"])
+evpl.load_state_dict(ckpt["evpl"])
+```
+
+The weight files sit next to this code under `weights/` in the release folder. Git ignores `*.pth` because the largest file is above GitHub's file size limit, so the same files are uploaded to Hugging Face and this repository keeps the code that loads them.
 
 ## Notes
 
-- No pretrained weights are included.
-- Checkpoints written under `work_dir/` are ignored by git.
+- Checkpoints written under `work_dir/` during training are ignored by git.
 
 ## Citation
 
