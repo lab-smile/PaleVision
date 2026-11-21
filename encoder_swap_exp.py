@@ -47,6 +47,8 @@ def get_args():
     p.add_argument('--local_rank', default=os.getenv('LOCAL_RANK', 0), type=int)
     p.add_argument('--backend', default='nccl')
     p.add_argument('--seed', default=42, type=int)
+    p.add_argument('--data_root', default=None,
+                   help='Dataset directory. Defaults to datasets/MODID or datasets/MHSI.')
     p.add_argument('--pretrained_encoder', action='store_true')
     return p.parse_args()
 
@@ -71,10 +73,10 @@ def cal_eta(t0, cur, total):
     return str(now - t0), str(eta)
 
 
-def build_dataloaders(dataset_name, local_rank):
+def build_dataloaders(dataset_name, local_rank, data_root=None):
     nw = 4
     if dataset_name == 'modid':
-        root = '/data/lyj/data/MODID'
+        root = data_root or os.path.join('datasets', 'MODID')
         shape = [270, 510]
         train_ds = ModidDataset(root_dir=root, input_shape=shape, train=True)
         val_ds = ModidDataset(root_dir=root, input_shape=shape, train=False)
@@ -86,7 +88,7 @@ def build_dataloaders(dataset_name, local_rank):
                                 num_workers=nw, pin_memory=True, drop_last=False)
         return train_loader, val_loader, train_sampler, 2
 
-    root = '/data/lyj/data/MHSI/'
+    root = data_root or os.path.join('datasets', 'MHSI')
     with open(os.path.join(root, 'train_val_test.json')) as f:
         split = json.load(f)
     train_files = split['train'] + split['val']
@@ -122,7 +124,7 @@ def train(args, cfg):
     t0 = datetime.datetime.now().replace(microsecond=0)
 
     train_loader, val_loader, train_sampler, num_classes = build_dataloaders(
-        args.dataset, args.local_rank)
+        args.dataset, args.local_rank, args.data_root)
 
     evpl = build_evpl(args.dataset, args.opsin_mode, device)
     evpl.to(device)

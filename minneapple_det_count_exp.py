@@ -82,7 +82,7 @@ def get_args():
     p = argparse.ArgumentParser()
     p.add_argument('--task', required=True, choices=['detection', 'counting'])
     p.add_argument('--opsin_mode', default='fixed', choices=['fixed', 'trainable'])
-    p.add_argument('--data_root', default='/data/lyj/data/minneapple')
+    p.add_argument('--data_root', default=os.path.join('datasets', 'minneapple'))
     p.add_argument('--config', default='configs/minneapple.yaml')
     p.add_argument('--workdir', default='work_dir/minneapple_det_count')
     p.add_argument('--counting_max_train', type=int, default=10000,

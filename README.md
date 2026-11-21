@@ -1,8 +1,18 @@
+---
+license: mit
+library_name: pytorch
+pipeline_tag: image-segmentation
+tags:
+  - hyperspectral
+  - semantic-segmentation
+  - opsin
+---
+
 # PaleVision
 
 Official implementation of **Paleoinspired Vision: From Exploring Colour Vision Evolution to Inspiring Camera Design**, accepted at **NeurIPS 2026**.
 
-[Project website](https://luyijie-research.github.io/PaleVision/) · [Code](https://github.com/luyijie-research/PaleVision) · [Weights](https://huggingface.co/lyj-flower/PaleVision)
+[arXiv](https://arxiv.org/abs/2412.19439) · [Project website](https://luyijie-research.github.io/PaleVision/) · [Code](https://github.com/luyijie-research/PaleVision) · [Weights](https://huggingface.co/lyj-flower/PaleVision)
 
 PaleVision models opsin spectral responses with learnable evolutionary visual perception layers (EVPL) and trains semantic segmentation on hyperspectral imagery.
 
@@ -21,12 +31,13 @@ work_dir/      logs and checkpoints (not shipped)
 ## Install
 
 ```bash
-conda create -n palevision python=3.10 -y
+conda env create -f environment.yml
 conda activate palevision
-pip install -r requirements.txt
 ```
 
-Install a CUDA build of PyTorch that matches your driver, then install `mmcv` for your torch/cuda combo if needed.
+`environment.yml` installs Python 3.10 and the packages in `requirements.txt`. The released training run used PyTorch 2.6.0 with CUDA 12.6. Install a CUDA build of PyTorch that matches your driver before `mmcv` if the default wheel does not.
+
+Hardware used for the released runs: an NVIDIA GPU with enough memory for MiT-B0 through Twins-SVT-Small at the resolutions in `configs/`. CPU-only loading of the checkpoints does not need that GPU.
 
 ## Data layout (Mars example)
 
@@ -110,7 +121,21 @@ head.load_state_dict(ckpt["head"])
 evpl.load_state_dict(ckpt["evpl"])
 ```
 
-The weight files sit next to this code under `weights/` in the release folder. Git ignores `*.pth` because the largest file is above GitHub's file size limit. Download the same files from [lyj-flower/PaleVision](https://huggingface.co/lyj-flower/PaleVision).
+The weight files sit next to this code under `weights/` in the release folder. Git ignores `*.pth` because the largest file is above GitHub's file size limit. Download the same files from [lyj-flower/PaleVision](https://huggingface.co/lyj-flower/PaleVision). Code for this release is at [luyijie-research/PaleVision](https://github.com/luyijie-research/PaleVision).
+
+## Model card
+
+PaleVision is a research model that maps a hyperspectral image through an opsin layer into a segmentation or counting network. The released files are the best finished checkpoints for each reported task. They contain module parameters only.
+
+**Intended use.** Reproduce the paper's segmentation, detection, counting, and Mars spectral-filter experiments, and inspect the learned opsin peak wavelengths.
+
+**Limitations.** Checkpoints are tied to the datasets and class counts used in training. They are not a general medical or navigation system. The Mars file is the finished epoch-1000 spectral EVPL; that run did not report a segmentation mIoU. LIB-HSI was assembled from the separately saved best backbone, head, and EVPL of the best finished run.
+
+**Training data.** MODID, MHSI, LIB-HSI, MinnApple, and the Mars MSL hyperspectral set. Place them under `datasets/` using the layout in this README and the loaders in `dataloader/`. The datasets themselves are not redistributed.
+
+**Evaluation.** Scores for the released weights are in the table above. Training hyperparameters live in `configs/`. Entry points default to random seed 42 (`--seed 42`).
+
+**Inference.** Load a segmentation checkpoint with the snippet above, or run the matching entry point (`modid_exp.py`, `mhsi_exp.py`, `lib_hsi_exp_v2.py`, `minneapple_exp.py`, `encoder_swap_exp.py`, `minneapple_det_count_exp.py`, `mars_exp.py`). Dataset paths are arguments or `datasets/<name>`, not machine-specific directories.
 
 ## Notes
 
@@ -126,6 +151,8 @@ If you use PaleVision in your research, please cite our NeurIPS 2026 paper:
   author    = {Lu, Yijie and Zong, Zhimin and Zhang, Junjie and Su, Shenghan and Zhao, Zeyun and Cui, Ziteng and Pu, Yan and Lu, Jing and Kojima, Daisuke and Gu, Lin and Fang, Ruogu},
   booktitle = {Advances in Neural Information Processing Systems},
   year      = {2026},
-  url       = {https://luyijie-research.github.io/PaleVision/}
+  eprint    = {2412.19439},
+  archivePrefix = {arXiv},
+  url       = {https://arxiv.org/abs/2412.19439}
 }
 ```
