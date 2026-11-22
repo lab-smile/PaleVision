@@ -12,7 +12,7 @@ tags:
 
 Official implementation of **Paleoinspired Vision: From Exploring Colour Vision Evolution to Inspiring Camera Design**, accepted at **NeurIPS 2026**.
 
-[arXiv](https://arxiv.org/abs/2412.19439) · [Project website](https://luyijie-research.github.io/PaleVision/) · [Code](https://github.com/luyijie-research/PaleVision) · [Weights](https://huggingface.co/lyj-flower/PaleVision)
+[arXiv](https://arxiv.org/abs/2412.19439) · [Project website](https://luyijie-research.github.io/PaleVision/) · [Code](https://github.com/luyijie-research/PaleVision) · [Weights](https://huggingface.co/smilelab/PaleVision)
 
 PaleVision models opsin spectral responses with learnable evolutionary visual perception layers (EVPL) and trains semantic segmentation on hyperspectral imagery.
 
@@ -121,7 +121,7 @@ head.load_state_dict(ckpt["head"])
 evpl.load_state_dict(ckpt["evpl"])
 ```
 
-The weight files sit next to this code under `weights/` in the release folder. Git ignores `*.pth` because the largest file is above GitHub's file size limit. Download the same files from [lyj-flower/PaleVision](https://huggingface.co/lyj-flower/PaleVision). Code for this release is at [luyijie-research/PaleVision](https://github.com/luyijie-research/PaleVision).
+The weight files sit next to this code under `weights/` in the release folder. Git ignores `*.pth` because the largest file is above GitHub's file size limit. Download the same files from [smilelab/PaleVision](https://huggingface.co/smilelab/PaleVision). Code for this release is at [luyijie-research/PaleVision](https://github.com/luyijie-research/PaleVision).
 
 ## Model card
 
