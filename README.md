@@ -12,7 +12,7 @@ tags:
 
 Official implementation of **Paleoinspired Vision: From Exploring Colour Vision Evolution to Inspiring Camera Design**, accepted at **NeurIPS 2026**.
 
-[arXiv](https://arxiv.org/abs/2412.19439) · [Project website](https://luyijie-research.github.io/PaleVision/) · [Code](https://github.com/luyijie-research/PaleVision) · [Weights](https://huggingface.co/smilelab/PaleVision)
+[arXiv](https://arxiv.org/abs/2412.19439) · [Project website](https://lab-smile.github.io/PaleVision/) · [Code](https://github.com/luyijie-research/PaleVision) · [Weights](https://huggingface.co/smilelab/PaleVision)
 
 PaleVision models opsin spectral responses with learnable evolutionary visual perception layers (EVPL) and trains semantic segmentation on hyperspectral imagery.
 
